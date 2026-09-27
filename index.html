@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI PRODUCTION</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="header">
+        <div>
+            <h1>AI PRODUCTION</h1>
+            <p>Sistem Production Berbasis AI</p>
+        </div>
+        <div class="status">
+            <span class="status-dot"></span>
+            Sistem Aktif
+        </div>
+    </header>
+
+    <nav class="navbar">
+        <button class="nav-btn active" data-page="dashboard">Dashboard</button>
+        <button class="nav-btn" data-page="produk">Produk</button>
+        <button class="nav-btn" data-page="bahan">Bahan Baku</button>
+        <button class="nav-btn" data-page="supplier">Supplier</button>
+        <button class="nav-btn" data-page="bom">Resep / BOM</button>
+        <button class="nav-btn" data-page="produksi">Produksi</button>
+        <button class="nav-btn" data-page="stok">Stok</button>
+        <button class="nav-btn" data-page="biaya">Biaya Produksi</button>
+        <button class="nav-btn" data-page="gagal">Produk Gagal</button>
+        <button class="nav-btn" data-page="laporan">Laporan</button>
+        <button class="nav-btn" data-page="backup">Backup & Restore</button>
+    </nav>
+
+    <main class="container">
+
+        <section id="dashboard" class="page active">
+            <div class="page-title">
+                <h2>Dashboard Produksi</h2>
+                <p>Ringkasan aktivitas produksi</p>
+            </div>
+
+            <div class="cards">
+                <div class="card">
+                    <span>Produksi Hari Ini</span>
+                    <strong id="dashboardProduksi">0</strong>
+                </div>
+
+                <div class="card">
+                    <span>Total Produk</span>
+                    <strong id="dashboardProduk">0</strong>
+                </div>
+
+                <div class="card">
+                    <span>Bahan Baku</span>
+                    <strong id="dashboardBahan">0</strong>
+                </div>
+
+                <div class="card">
+                    <span>Stok Barang Jadi</span>
+                    <strong id="dashboardStok">0</strong>
+                </div>
+
+                <div class="card">
+                    <span>Biaya Produksi</span>
+                    <strong id="dashboardBiaya">Rp0</strong>
+                </div>
+
+                <div class="card warning-card">
+                    <span>Stok Minimum</span>
+                    <strong id="dashboardMinimum">0</strong>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>AI Production Assistant</h3>
+
+                <div class="ai-box">
+                    <input
+                        type="text"
+                        id="aiCommand"
+                        placeholder="Contoh: Produksi 100 botol Jus Mangga"
+                    >
+                    <button onclick="jalankanAI()">Proses</button>
+                </div>
+
+                <div id="aiResult" class="ai-result">
+                    Masukkan perintah produksi.
+                </div>
+            </div>
+        </section>
+
+        <section id="produk" class="page">
+            <div class="page-title">
+                <h2>Master Produk</h2>
+                <p>Kelola produk barang jadi</p>
+            </div>
+
+            <div class="panel">
+                <form id="produkForm">
+                    <input type="hidden" id="produkId">
+
+                    <input id="produkNama" type="text" placeholder="Nama produk" required>
+                    <input id="produkHarga" type="number" placeholder="Harga produk" min="0" required>
+                    <input id="produkSatuan" type="text" placeholder="Satuan" required>
+                    <input id="produkStok" type="number" placeholder="Stok awal" min="0" value="0">
+
+                    <button type="submit">Simpan Produk</button>
+                </form>
+            </div>
+
+            <div class="panel">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Produk</th>
+                                <th>Harga</th>
+                                <th>Satuan</th>
+                                <th>Stok</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="produkTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="bahan" class="page">
+            <div class="page-title">
+                <h2>Master Bahan Baku</h2>
+                <p>Kelola bahan yang digunakan untuk produksi</p>
+            </div>
+
+            <div class="panel">
+                <form id="bahanForm">
+                    <input type="hidden" id="bahanId">
+
+                    <input id="bahanNama" type="text" placeholder="Nama bahan" required>
+                    <input id="bahanSatuan" type="text" placeholder="Satuan" required>
+                    <input id="bahanStok" type="number" placeholder="Stok" min="0" value="0">
+                    <input id="bahanHarga" type="number" placeholder="Harga" min="0" value="0">
+                    <input id="bahanSupplier" type="text" placeholder="Supplier">
+                    <input id="bahanMinimum" type="number" placeholder="Stok minimum" min="0" value="0">
+
+                    <button type="submit">Simpan Bahan</button>
+                </form>
+            </div>
+
+            <div class="panel">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Bahan</th>
+                                <th>Satuan</th>
+                                <th>Stok</th>
+                                <th>Harga</th>
+                                <th>Supplier</th>
+                                <th>Minimum</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bahanTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="supplier" class="page">
+            <div class="page-title">
+                <h2>Supplier</h2>
+                <p>Kelola pemasok bahan baku</p>
+            </div>
+
+            <div class="panel">
+                <form id="supplierForm">
+                    <input type="hidden" id="supplierId">
+
+                    <input id="supplierNama" type="text" placeholder="Nama supplier" required>
+                    <input id="supplierKontak" type="text" placeholder="Kontak">
+                    <input id="supplierAlamat" type="text" placeholder="Alamat">
+
+                    <button type="submit">Simpan Supplier</button>
+                </form>
+            </div>
+
+            <div class="panel">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nama</th>
+                                <th>Kontak</th>
+                                <th>Alamat</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="supplierTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="bom" class="page">
+            <div class="page-title">
+                <h2>Resep / BOM</h2>
+                <p>Atur kebutuhan bahan untuk setiap produk</p>
+            </div>
+
+            <div class="panel">
+                <form id="bomForm">
+                    <input type="hidden" id="bomId">
+
+                    <input id="bomProduk" type="text" placeholder="Nama produk" required>
+                    <input id="bomBahan" type="text" placeholder="Nama bahan" required>
+                    <input id="bomJumlah" type="number" placeholder="Jumlah kebutuhan" min="0" step="any" required>
+                    <input id="bomSatuan" type="text" placeholder="Satuan" required>
+
+                    <button type="submit">Simpan BOM</button>
+                </form>
+            </div>
+
+            <div class="panel">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Produk</th>
+                                <th>Bahan</th>
+                                <th>Kebutuhan</th>
+                                <th>Satuan</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bomTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="produksi" class="page">
+            <div class="page-title">
+                <h2>Proses Produksi</h2>
+                <p>Catat dan jalankan proses produksi</p>
+            </div>
+
+            <div class="panel">
+                <form id="produksiForm">
+                    <input id="produksiProduk" type="text" placeholder="Nama produk" required>
+                    <input id="produksiQty" type="number" placeholder="Jumlah produksi" min="1" required>
+                    <input id="produksiTanggal" type="date" required>
+
+                    <button type="submit">Mulai Produksi</button>
+                </form>
+
+                <div id="produksiMessage" class="message"></div>
+            </div>
+
+            <div class="panel">
+                <h3>Riwayat Produksi</h3>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Produk</th>
+                                <th>Qty</th>
+                                <th>Total Biaya</th>
+                            </tr>
+                        </thead>
+                        <tbody id="produksiTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="stok" class="page">
+            <div class="page-title">
+                <h2>Stok</h2>
+                <p>Pergerakan stok bahan dan produk</p>
+            </div>
+
+            <div class="panel">
+                <h3>Stok Produk</h3>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Produk</th>
+                                <th>Stok</th>
+                                <th>Satuan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stokProdukTable"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>Stok Bahan Baku</h3>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Bahan</th>
+                                <th>Stok</th>
+                                <th>Satuan</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stokBahanTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="biaya" class="page">
+            <div class="page-title">
+                <h2>Biaya Produksi</h2>
+                <p>Catatan biaya produksi</p>
+            </div>
+
+            <div class="panel">
+                <form id="biayaForm">
+                    <input type="hidden" id="biayaId">
+
+                    <input id="biayaKeterangan" type="text" placeholder="Keterangan biaya" required>
+                    <input id="biayaJumlah" type="number" placeholder="Jumlah biaya" min="0" required>
+                    <input id="biayaTanggal" type="date" required>
+
+                    <button type="submit">Simpan Biaya</button>
+                </form>
+            </div>
+
+            <div class="panel">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Keterangan</th>
+                                <th>Jumlah</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="biayaTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="gagal" class="page">
+            <div class="page-title">
+                <h2>Produk Gagal / Rusak</h2>
+                <p>Catat hasil produksi yang gagal atau rusak</p>
+            </div>
+
+            <div class="panel">
+                <form id="gagalForm">
+                    <input type="hidden" id="gagalId">
+
+                    <input id="gagalProduk" type="text" placeholder="Nama produk" required>
+                    <input id="gagalQty" type="number" placeholder="Jumlah" min="1" required>
+                    <input id="gagalAlasan" type="text" placeholder="Alasan" required>
+                    <input id="gagalTanggal" type="date" required>
+
+                    <button type="submit">Simpan</button>
+                </form>
+            </div>
+
+            <div class="panel">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Produk</th>
+                                <th>Qty</th>
+                                <th>Alasan</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gagalTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="laporan" class="page">
+            <div class="page-title">
+                <h2>Laporan</h2>
+                <p>Ringkasan data produksi</p>
+            </div>
+
+            <div class="cards">
+                <div class="card">
+                    <span>Total Produksi</span>
+                    <strong id="laporanTotalProduksi">0</strong>
+                </div>
+
+                <div class="card">
+                    <span>Total Biaya</span>
+                    <strong id="laporanTotalBiaya">Rp0</strong>
+                </div>
+
+                <div class="card">
+                    <span>Total Produk Gagal</span>
+                    <strong id="laporanTotalGagal">0</strong>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>Ringkasan Produksi</h3>
+                <div id="laporanContent"></div>
+            </div>
+        </section>
+
+        <section id="backup" class="page">
+            <div class="page-title">
+                <h2>Backup & Restore</h2>
+                <p>Kelola keamanan data aplikasi</p>
+            </div>
+
+            <div class="backup-grid">
+
+                <div class="backup-card">
+                    <h3>Backup Data</h3>
+                    <p>Simpan seluruh data AI PRODUCTION ke file JSON.</p>
+                    <button onclick="backupData()">Backup Data</button>
+                </div>
+
+                <div class="backup-card">
+                    <h3>Restore Data</h3>
+                    <p>Kembalikan data dari file backup JSON.</p>
+                    <input type="file" id="restoreFile" accept=".json">
+                    <button onclick="restoreData()">Restore Data</button>
+                </div>
+
+                <div class="backup-card">
+                    <h3>Export CSV</h3>
+                    <p>Export data produksi ke format CSV.</p>
+                    <button onclick="exportProduksiCSV()">Export CSV</button>
+                </div>
+
+                <div class="backup-card danger">
+                    <h3>Reset Data</h3>
+                    <p>Hapus seluruh data aplikasi.</p>
+                    <button onclick="resetDatabase()">Reset Data</button>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>AI PRODUCTION © 2026</p>
+    </footer>
+
+    <script src="database.js"></script>
+    <script src="storage.js"></script>
+    <script src="app.js"></script>
+
+</body>
+</html>
